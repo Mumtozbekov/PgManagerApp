@@ -31,7 +31,7 @@
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
-                    <ListBox x:Name="ltbHistory" ItemsSource="{Binding RelativeSource={RelativeSource AncestorType=local:QueryTool},Path=History}">
+                    <ListBox x:Name="ltbHistory" ItemsSource="{Binding RelativeSource={RelativeSource AncestorType=local:QueryTool},Path=History}" SelectionChanged="ltbHistory_SelectionChanged">
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <StackPanel>
@@ -46,13 +46,13 @@
                             <RowDefinition Height="auto"/>
                             <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
-                        <local:SQLEditor IsReadOnly="True" Style="{StaticResource DefaultRichTextBoxStyle}">
-                            <FlowDocument>
-                                <Paragraph>
-                                    <Run Text="{Binding ElementName=ltbHistory, Path=SelectedItem.Query, Mode=OneWay}"/>
-                                </Paragraph>
-                            </FlowDocument>
-                        </local:SQLEditor>
+                        <StackPanel Orientation="Horizontal" Margin="0,4">
+                            <Button Content="Copy" Command="{Binding RelativeSource={RelativeSource AncestorType=local:QueryTool},Path=CopyCommand}"/>
+                            <Button Content="Copy to Query editor" Command="{Binding RelativeSource={RelativeSource AncestorType=local:QueryTool},Path=CopyToEditorCommand}" Margin="4,0"/>
+                        </StackPanel>
+                        <local:SQLEditor x:Name="rtbHistory" Grid.Row="1" IsReadOnly="True" VerticalAlignment="Stretch" Style="{StaticResource DefaultRichTextBoxStyle}"/>
+
+
                     </Grid>
                 </Grid>
             </TabItem>

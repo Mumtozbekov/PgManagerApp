@@ -28,10 +28,9 @@ namespace PgManager.Controls
     /// </summary>
     public partial class QueryTool : UserControl
     {
-        //public delegate void QueryRunEventHandler(string query);
 
-        //public event QueryRunEventHandler OnQueryRun;
-
+        public ICommand CopyCommand { get; set; }
+        public ICommand CopyToEditorCommand { get; set; }
         public RelayCommand<string> RunQueryCommand
         {
             get { return (RelayCommand<string>)GetValue(RunQueryCommandProperty); }
@@ -48,6 +47,28 @@ namespace PgManager.Controls
             InitializeComponent();
 
             History = new();
+
+            CopyCommand = new RelayCommand(CopyHistory);
+            CopyToEditorCommand = new RelayCommand(CopyHistoryToEditor);
+        }
+
+        private void CopyHistoryToEditor()
+        {
+            if (ltbHistory.SelectedItem is QueryHistoryModel history)
+            {
+                var paragraph = new Paragraph(new Run(history.Query));
+                var doc = new FlowDocument();
+
+                doc.Blocks.Add(paragraph);
+
+                editor.Document = doc;
+            }
+        }
+
+        private void CopyHistory()
+        {
+            if (ltbHistory.SelectedItem is QueryHistoryModel history)
+                Clipboard.SetText(history.Query);
         }
 
         public override void OnApplyTemplate()
@@ -66,6 +87,7 @@ namespace PgManager.Controls
             if (string.IsNullOrEmpty(query) || string.IsNullOrWhiteSpace(query))
                 return;
 
+            query = query.Trim('\n').Trim('\r').Trim(';');
             History.Add(new(query));
 
             RunQueryCommand?.Execute(query);
@@ -76,6 +98,20 @@ namespace PgManager.Controls
             if (e.Key == Key.Enter && (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl)))
             {
                 RunQuery(sender, e);
+            }
+        }
+
+        private void ltbHistory_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var list = sender as ListBox;
+            if (list != null && list.SelectedItem is QueryHistoryModel history)
+            {
+                var paragraph = new Paragraph(new Run(history.Query));
+                var doc = new FlowDocument();
+
+                doc.Blocks.Add(paragraph);
+
+                rtbHistory.Document = doc;
             }
         }
     }
