@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PgManager.API", "PgManager.API\PgManager.API.csproj", "{460045B8-78AD-4B70-B186-C8AAAB8FDCBE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PgManager", "PgManager\PgManager.csproj", "{B58EAFA3-F00B-41A4-BCCC-786A86916D08}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{460045B8-78AD-4B70-B186-C8AAAB8FDCBE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{460045B8-78AD-4B70-B186-C8AAAB8FDCBE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{460045B8-78AD-4B70-B186-C8AAAB8FDCBE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{460045B8-78AD-4B70-B186-C8AAAB8FDCBE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B58EAFA3-F00B-41A4-BCCC-786A86916D08}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B58EAFA3-F00B-41A4-BCCC-786A86916D08}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B58EAFA3-F00B-41A4-BCCC-786A86916D08}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B58EAFA3-F00B-41A4-BCCC-786A86916D08}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {16A33B5E-76DE-41D7-86B8-5C3B8FA5A734}
+	EndGlobalSection
+EndGlobal

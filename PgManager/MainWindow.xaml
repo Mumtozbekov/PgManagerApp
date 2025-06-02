@@ -1,0 +1,107 @@
+﻿<windows:BaseWindow  xmlns:windows="clr-namespace:PgManager.Windows"
+                     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+                  x:Class="PgManager.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:PgManager"
+        mc:Ignorable="d"
+                     WindowState="Maximized"
+                     xmlns:ex="clr-namespace:PgManager.Extensions" xmlns:controls="clr-namespace:PgManager.Controls"
+                     WindowBackdropType="Mica"
+   ExtendsContentIntoTitleBar="True"
+   WindowCornerPreference="Round"
+        Title="MainWindow" Height="450" Width="800">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <ui:TitleBar x:Name="TitleBar"
+        Height="32"
+        Title="PgManager"
+        />
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto" MinWidth="150" MaxWidth="500"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <TreeView x:Name="dbTree" ItemsSource="{Binding DbInfoTree}" Margin="4,0" TreeViewItem.Expanded="{ex:MethodBinding HanldeTreviewExpand, {ex:EventArgs}}">
+                <TreeView.ItemTemplate>
+                    <HierarchicalDataTemplate ItemsSource="{Binding Children}" >
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <ui:ProgressRing Height="12" Width="12" IsIndeterminate="True" Visibility="{Binding IsLoading, Converter={StaticResource BoolToVisibilityConverter}}" VerticalAlignment="Center" Margin="-8,2,4,0"/>
+                            <TextBlock Text="{Binding Name}" Margin="0,4" FontSize="16" />
+                        </StackPanel>
+                    </HierarchicalDataTemplate>
+                </TreeView.ItemTemplate>
+            </TreeView>
+            <GridSplitter Grid.Column="0" Background="Transparent" Width="4" HorizontalAlignment="Right"  ResizeDirection="Columns" />
+
+            <Grid Grid.Column="1" Margin="0,0,12,0">
+                <Grid.RowDefinitions>
+                    <!--<RowDefinition Height="auto" />-->
+                    <RowDefinition Height="*" MinHeight="200"/>
+                    <RowDefinition Height="auto" MinHeight="4"/>
+                    <RowDefinition Height="*" MinHeight="100"/>
+                </Grid.RowDefinitions>
+                <StackPanel Orientation="Horizontal" Panel.ZIndex="2" Margin="48,2,0,0" VerticalAlignment="Top">
+                    <TextBlock Text="Baza: " VerticalAlignment="Center"/>
+                    <ComboBox ItemsSource="{Binding DatabaseNames}"  Margin="8,0" SelectedIndex="0"  SelectedItem="{Binding SelectedDbName}"/>
+
+                </StackPanel>
+                <controls:QueryTool Grid.Row="0" RunQueryCommand="{Binding RunQueryCommand}"/>
+                <GridSplitter Grid.Row="1"  HorizontalAlignment="Stretch" Background="{ui:ThemeResource TextFillColorDisabledBrush}" />
+                <Grid  Grid.Row="2">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Border Grid.RowSpan="3" Panel.ZIndex="5" CornerRadius="4" Visibility="{Binding QueryExecuting, Converter={StaticResource BoolToVisibilityConverter}}" Background="{ui:ThemeResource ControlFillColorDefaultBrush}">
+                        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                            <ui:ProgressRing IsIndeterminate="True"/>
+                            <TextBlock Text="Iltimos kuting.." FontSize="22" Margin="0,8"/>
+                        </StackPanel>
+                    </Border>
+                    <Menu
+                        Margin="-2,0"
+                        HorizontalAlignment="Left"
+                        Background="Transparent"
+                        FontSize="14">
+                        <ui:MenuItem
+                            FontSize="20" 
+                            Command="{Binding ExportToCsvCommand}"
+                            ToolTip="Export to CSV"
+                            Header="Export to CSV"
+                            Foreground="{ui:ThemeResource TextFillColorPrimaryBrush}"
+                            Icon="{ui:SymbolIcon DocumentArrowDown20}" />
+                    </Menu>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                        <TextBlock Text="Limit: " VerticalAlignment="Center" FontSize="14"/>
+                        <ui:NumberBox Margin="0,8" Value="50" Text="{Binding Limit}"/>
+                        <TextBlock Text="{Binding CurrentPage, StringFormat='{}Page: {0} of '}" Margin="8,0" VerticalAlignment="Center"/>
+                        <TextBlock Text="{Binding PageCount}" VerticalAlignment="Center"/>
+                        <Menu
+                       
+                        Background="Transparent"
+                        FontSize="14">
+                            <ui:MenuItem
+                            FontSize="20" 
+                                Command="{Binding PrevPageCommand}"
+                            Foreground="{ui:ThemeResource TextFillColorPrimaryBrush}"
+                            Icon="{ui:SymbolIcon ArrowPrevious20}" />
+                            <ui:MenuItem
+                            FontSize="20" 
+                                Command="{Binding NextPageCommand}"
+                            Foreground="{ui:ThemeResource TextFillColorPrimaryBrush}"
+                            Icon="{ui:SymbolIcon ArrowNext20}" />
+                        </Menu>
+                    </StackPanel>
+                    <DataGrid Grid.Row="1" EnableRowVirtualization="True" EnableColumnVirtualization="True" ItemsSource="{Binding DataTable.DefaultView}" Background="{ui:ThemeResource ControlFillColorSecondaryBrush}"/>
+                </Grid>
+            </Grid>
+        </Grid>
+    </Grid>
+</windows:BaseWindow>

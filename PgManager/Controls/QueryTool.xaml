@@ -1,0 +1,61 @@
+﻿<UserControl x:Class="PgManager.Controls.QueryTool"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:PgManager.Controls" xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Menu
+            Margin="0"
+            Background="Transparent"
+            FontSize="14">
+            <ui:MenuItem
+                Click="RunQuery"
+                Foreground="{DynamicResource PaletteGreenBrush}"
+                Icon="{ui:SymbolIcon Play24}" />
+        </Menu>
+        <TabControl Grid.Row="1">
+            <TabItem Header="SQL" >
+
+                <local:SQLEditor x:Name="editor" PreviewKeyDown="editor_PreviewKeyDown" Style="{StaticResource DefaultRichTextBoxStyle}" />
+            </TabItem>
+            <TabItem Header="History">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <ListBox x:Name="ltbHistory" ItemsSource="{Binding RelativeSource={RelativeSource AncestorType=local:QueryTool},Path=History}">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel>
+                                    <TextBlock Text="{Binding Query}"/>
+                                    <TextBlock Text="{Binding DateTime, StringFormat='{}dd:mm:ss'}"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                    <Grid Grid.Column="1">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <local:SQLEditor IsReadOnly="True" Style="{StaticResource DefaultRichTextBoxStyle}">
+                            <FlowDocument>
+                                <Paragraph>
+                                    <Run Text="{Binding ElementName=ltbHistory, Path=SelectedItem.Query, Mode=OneWay}"/>
+                                </Paragraph>
+                            </FlowDocument>
+                        </local:SQLEditor>
+                    </Grid>
+                </Grid>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</UserControl>
