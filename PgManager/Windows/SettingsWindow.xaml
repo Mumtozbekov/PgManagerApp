@@ -79,7 +79,7 @@
         </StackPanel>
 
         <StackPanel Grid.Row="3" HorizontalAlignment="Right" Orientation="Horizontal" Margin="8">
-            <ui:Button Appearance="Dark" Content="Bekor Qilish" Margin="4" Cursor="Hand"/>
+            <ui:Button Appearance="Dark" Command="{Binding CancelCommand}" Content="Bekor Qilish" Margin="4" Cursor="Hand"/>
             <ui:Button Command="{Binding SaveCommand}" Content="Saqlash" Margin="4" Appearance="Primary" Cursor="Hand"/>
         </StackPanel>
     </Grid>

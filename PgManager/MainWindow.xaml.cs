@@ -21,8 +21,6 @@ namespace PgManager
     /// </summary>
     public partial class MainWindow : BaseWindow
     {
-
-
         public MainWindow()
         {
             InitializeComponent();
@@ -30,32 +28,18 @@ namespace PgManager
         public MainWindow(MainViewModel viewModel) : this()
         {
             DataContext = viewModel;
+            viewModel.Window = this;
         }
 
-        //public override void OnApplyTemplate()
-        //{
-        //    base.OnApplyTemplate();
-        //    if (DataContext is MainViewModel viewModel)
-        //    {
-        //        viewModel.LoadDBs();
-        //    }
-        //}
+  
 
-
-        
-        //public bool Navigate(Type pageType)
-        //{
-
-        //    try
-        //    {
-
-        //        return MainNavigation.Navigate(pageType);
-        //    }
-        //    catch
-        //    {
-        //        return false;
-        //    }
-
-        //}
+        private void dbProperties_Click(object sender, RoutedEventArgs e)
+        {
+            //aslida bu command bilan qilishi kerak edi
+            if (sender is Wpf.Ui.Controls.MenuItem mi && DataContext is MainViewModel vm)
+            {
+                vm.ShowDbNodeProperties(mi.DataContext);
+            }
+        }
     }
 }

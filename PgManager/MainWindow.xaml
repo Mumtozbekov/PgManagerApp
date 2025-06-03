@@ -8,7 +8,7 @@
         xmlns:local="clr-namespace:PgManager"
         mc:Ignorable="d"
                      WindowState="Maximized"
-                     xmlns:ex="clr-namespace:PgManager.Extensions" xmlns:controls="clr-namespace:PgManager.Controls"
+                     xmlns:ex="clr-namespace:PgManager.Extensions" xmlns:controls="clr-namespace:PgManager.Controls" xmlns:converters="clr-namespace:PgManager.Converters" xmlns:viewModel="clr-namespace:PgManager.ViewModels"
                      WindowBackdropType="Mica"
    ExtendsContentIntoTitleBar="True"
    WindowCornerPreference="Round"
@@ -25,19 +25,48 @@
 
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="auto" MinWidth="150" MaxWidth="500"/>
+                <ColumnDefinition Width="auto" MinWidth="200" MaxWidth="500"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            <TreeView x:Name="dbTree" ItemsSource="{Binding DbInfoTree}" Margin="4,0" TreeViewItem.Expanded="{ex:MethodBinding HanldeTreviewExpand, {ex:EventArgs}}">
-                <TreeView.ItemTemplate>
-                    <HierarchicalDataTemplate ItemsSource="{Binding Children}" >
-                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                            <ui:ProgressRing Height="12" Width="12" IsIndeterminate="True" Visibility="{Binding IsLoading, Converter={StaticResource BoolToVisibilityConverter}}" VerticalAlignment="Center" Margin="-8,2,4,0"/>
-                            <TextBlock Text="{Binding Name}" Margin="0,4" FontSize="16" />
-                        </StackPanel>
-                    </HierarchicalDataTemplate>
-                </TreeView.ItemTemplate>
-            </TreeView>
+            <Grid Margin="0,2">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <ui:Button HorizontalAlignment="Right" ToolTip="Refresh" Command="{Binding RefreshCommand}" Margin="4" Height="32">
+                    <ui:SymbolIcon Symbol="ArrowSync20"/>
+                </ui:Button>
+                <ui:ProgressRing Grid.Row="1" Visibility="{Binding IsLoadingDbs, Converter={StaticResource BoolToVisibilityConverter}}" IsIndeterminate="True" />
+                <TreeView x:Name="dbTree" Grid.Row="1" ItemsSource="{Binding DbInfoTree}" Margin="4,0" TreeViewItem.Expanded="{ex:MethodBinding HanldeTreviewExpand, {ex:EventArgs}}">
+                    <TreeView.ItemContainerStyle>
+                        <Style TargetType="TreeViewItem" BasedOn="{StaticResource DefaultTreeViewItemStyle}">
+                            <Setter Property="ContextMenu">
+                                <Setter.Value>
+                                    <ContextMenu>
+                                        <ui:MenuItem Header="Properties" 
+                                                Icon="{ui:SymbolIcon Symbol=Info20}">
+                                            <ui:MenuItem.Style>
+                                                <Style TargetType="ui:MenuItem">
+                                                    <EventSetter Event="Click" Handler="dbProperties_Click"/>
+                                                </Style>
+                                            </ui:MenuItem.Style>
+                                        </ui:MenuItem>
+                                    </ContextMenu>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </TreeView.ItemContainerStyle>
+                    <TreeView.ItemTemplate>
+                        <HierarchicalDataTemplate ItemsSource="{Binding Children}" >
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="-8,0,0,0">
+                                <ui:ProgressRing Height="12" Width="12" IsIndeterminate="True" Visibility="{Binding IsLoading, Converter={StaticResource BoolToVisibilityConverter}}" VerticalAlignment="Center" Margin="0,2,4,0"/>
+                                <ui:SymbolIcon Symbol="{Binding Key, Converter={converters:KeyToIconConverter}}" Margin="8,0"/>
+                                <TextBlock Text="{Binding Name}" Margin="0,4" FontSize="16" />
+                            </StackPanel>
+                        </HierarchicalDataTemplate>
+                    </TreeView.ItemTemplate>
+                </TreeView>
+            </Grid>
             <GridSplitter Grid.Column="0" Background="Transparent" Width="4" HorizontalAlignment="Right"  ResizeDirection="Columns" />
 
             <Grid Grid.Column="1" Margin="0,0,12,0">
@@ -48,10 +77,19 @@
                     <RowDefinition Height="*" MinHeight="100"/>
                 </Grid.RowDefinitions>
                 <StackPanel Orientation="Horizontal" Panel.ZIndex="2" Margin="48,2,0,0" VerticalAlignment="Top">
-                    <TextBlock Text="Baza: " VerticalAlignment="Center"/>
-                    <ComboBox ItemsSource="{Binding DatabaseNames}"  Margin="8,0" SelectedIndex="0"  SelectedItem="{Binding SelectedDbName}"/>
+                    <TextBlock Text="Tanlangan Baza: " VerticalAlignment="Center"/>
+                    <ComboBox ItemsSource="{Binding DatabaseNames}" MinWidth="150" Margin="8,0" SelectedIndex="0"  SelectedItem="{Binding SelectedDbName}"/>
 
                 </StackPanel>
+                <ui:Button HorizontalAlignment="Right" 
+                           Margin="0,16,0,4"
+                           Panel.ZIndex="5"
+                           ToolTip="Sozlamalar"
+                           Command="{Binding OpenSettingsCommand}"
+                           VerticalAlignment="Top" Height="36"
+                           Width="36" Padding="0">
+                    <ui:SymbolIcon Symbol="Settings24" FontSize="18"/>
+                </ui:Button>
                 <controls:QueryTool Grid.Row="0" RunQueryCommand="{Binding RunQueryCommand}"/>
                 <GridSplitter Grid.Row="1"  HorizontalAlignment="Stretch" Background="{ui:ThemeResource TextFillColorDisabledBrush}" />
                 <Grid  Grid.Row="2">
@@ -99,7 +137,10 @@
                             Icon="{ui:SymbolIcon ArrowNext20}" />
                         </Menu>
                     </StackPanel>
-                    <DataGrid Grid.Row="1" EnableRowVirtualization="True" EnableColumnVirtualization="True" ItemsSource="{Binding DataTable.DefaultView}" Background="{ui:ThemeResource ControlFillColorSecondaryBrush}"/>
+                    <DataGrid Grid.Row="1" EnableRowVirtualization="True"
+                              EnableColumnVirtualization="True"
+                              GridLinesVisibility="All"
+                              ItemsSource="{Binding DataTable.DefaultView}" Background="{ui:ThemeResource ControlFillColorSecondaryBrush}"/>
                 </Grid>
             </Grid>
         </Grid>

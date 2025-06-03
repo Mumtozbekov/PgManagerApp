@@ -223,16 +223,13 @@ public class ConnectionService
             var schemas = await GetSchemasAsync(dbConfig);
             if (schemas != null)
             {
+                var schemasNode = new DbInfoTreeNode("Schemas", "sch") { DbName = dbNode.Name };
                 foreach (var schema in schemas)
                 {
-                    var schemaNode = new DbInfoTreeNode(schema, "sch");
-                    //var schemaConfig = SchemaConnectionConfigDto.Create(config);
-                    //schemaConfig.Schema = schema;
-                    //var tables = await GetTableTree(schemaConfig);
-                    //schemaNode.Children = tables;
-                    dbNode.Children.Add(schemaNode);
-
+                    var schemaNode = new DbInfoTreeNode(schema, "sch") { DbName = dbNode.Name };
+                    schemasNode.Children.Add(schemaNode);
                 }
+                dbNode.Children.Add(schemasNode);
             }
             tree.Children.Add(dbNode);
 
@@ -254,7 +251,7 @@ public class ConnectionService
             if (columnsInfos != null)
             {
                 foreach (var columnInfo in columnsInfos)
-                    columns.Children.Add(new(columnInfo.ColumnName, ""));
+                    columns.Children.Add(new(columnInfo.ColumnName, "") { ColumnInfo = columnInfo });
             }
             tableNode.Children.Add(columns);
 
@@ -263,7 +260,7 @@ public class ConnectionService
             if (constraintInfos != null)
             {
                 foreach (var constraintInfo in constraintInfos)
-                    constraints.Children.Add(new(constraintInfo.ColumnName, ""));
+                    constraints.Children.Add(new(constraintInfo.ConstraintName, "") {DbName=config.Database, ColumnInfo = new TableColumnInfoDto() { ColumnName = constraintInfo.ColumnName } }); ;
             }
             tableNode.Children.Add(constraints);
 

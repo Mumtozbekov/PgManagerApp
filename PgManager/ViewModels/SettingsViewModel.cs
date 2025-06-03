@@ -18,6 +18,7 @@ namespace PgManager.ViewModels
         private ApiService _apiService;
 
         [ObservableProperty]
+        [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
         private bool isConnected;
         [ObservableProperty]
         private bool isBusy;
@@ -76,6 +77,14 @@ namespace PgManager.ViewModels
 
             Global.DbPassword = DbPassword;
             Settings.Default.Save();
+
+            if (App.Current.MainWindow is MainWindow)
+            {
+                var vm = App.GetRequiredService<MainViewModel>();
+                vm.Refresh();
+
+                CloseWindow();
+            }
         }
 
         private bool CanSave()
@@ -86,7 +95,11 @@ namespace PgManager.ViewModels
                 || string.IsNullOrWhiteSpace(DbPassword));
         }
 
-
+        [RelayCommand]
+        private void Cancel()
+        {
+            CloseWindow();
+        }
         [RelayCommand]
         private async Task CheckConnection()
         {
@@ -109,10 +122,11 @@ namespace PgManager.ViewModels
 
             IsBusy = false;
 
-            if(IsConnected && App.Current.MainWindow is not MainWindow)
+            if (IsConnected && App.Current.MainWindow is not MainWindow)
             {
                 Save();
                 BaseWindow.ShowWindow<MainWindow>();
+                CloseWindow();
             }
         }
 

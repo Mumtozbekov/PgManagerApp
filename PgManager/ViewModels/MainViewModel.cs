@@ -19,6 +19,7 @@ using PgManager.Converters;
 using PgManager.Helpers;
 using PgManager.Models;
 using PgManager.Services;
+using PgManager.Windows;
 
 using Wpf.Ui.Abstractions.Controls;
 using Wpf.Ui.Controls;
@@ -28,6 +29,7 @@ namespace PgManager.ViewModels
     public partial class MainViewModel : BaseViewModel
     {
         private ApiService apiService;
+        private BaseWindow window;
 
         [ObservableProperty]
         private ObservableCollection<DbInfoTreeNode> dbInfoTree;
@@ -43,10 +45,13 @@ namespace PgManager.ViewModels
         int limit = 50;
 
         [ObservableProperty]
-        string selectedDbName;
+        string? selectedDbName;
 
         [ObservableProperty]
         bool queryExecuting;
+
+        [ObservableProperty]
+        bool isLoadingDbs;
 
         [ObservableProperty]
         SqlQueryResult queryResult;
@@ -68,24 +73,37 @@ namespace PgManager.ViewModels
 
         public async Task LoadDBs()
         {
+            IsLoadingDbs = true;
+
             var dbNode = await apiService.GetDbTree();
             if (dbNode != null)
                 DbInfoTree.Add(dbNode);
 
-            foreach (var child in dbNode.Children)
+            foreach (var child in dbNode!.Children)
             {
                 if (child is DbInfoTreeNode && child.Key == DbTreeNodeKeys.Database)
                 {
                     DatabaseNames.Add(child.Name);
                 }
             }
+
+            IsLoadingDbs = false;
         }
         private string lastQuery;
         [RelayCommand]
-        public async void RunQuery(string query)
+        public void RunQuery(string query)
         {
             lastQuery = query;
             SendQuery(query);
+        }
+
+        [RelayCommand]
+        public async Task Refresh()
+        {
+            DbInfoTree.Clear();
+            DatabaseNames.Clear();
+            await LoadDBs();
+            SelectedDbName = DatabaseNames.FirstOrDefault();
         }
         public async void SendQuery(string query)
         {
@@ -106,6 +124,13 @@ namespace PgManager.ViewModels
             }
             QueryExecuting = false;
         }
+
+        [RelayCommand]
+        public void OpenSettings()
+        {
+            BaseWindow.ShowDialog<SettingsWindow>();
+        }
+
         [RelayCommand(CanExecute = nameof(CanNext))]
         public async void NextPage()
         {
@@ -129,7 +154,7 @@ namespace PgManager.ViewModels
             return CurrentPage > 1;
         }
 
-        public async Task LoadTables(DbInfoTreeNode node)
+        public void LoadTables(DbInfoTreeNode node)
         {
             if (node == null)
                 return;
@@ -147,7 +172,7 @@ namespace PgManager.ViewModels
                             {
 
                                 childNode.IsLoading = true;
-                                var tables = await apiService.GetTableTree(node.Name, childNode.Name);
+                                var tables = await apiService.GetTableTree(node.DbName, childNode.Name);
                                 foreach (var table in tables) { childNode.Children.Add(table); }
 
                             }
@@ -174,6 +199,29 @@ namespace PgManager.ViewModels
             }
 
         }
+
+
+        [RelayCommand]
+        public void ShowDbNodeProperties(object param)
+        {
+            var node = param as DbInfoTreeNode;
+            if (node == null) return;
+
+            if (node.Key != DbTreeNodeKeys.Table)
+            {
+                MessageBoxHelper.Show("Xozircha faqat tablitsalarni ko'ra olamiz!");
+                return;
+            }
+
+            var propertiesWindow = App.GetRequiredService<TablePropertiesWindow>();
+            var propertiesViewModel = App.GetRequiredService<TablePropertiesViewModel>();
+
+            propertiesViewModel.LoadNode(node);
+            propertiesWindow.DataContext = propertiesViewModel;
+            propertiesWindow.Owner = this.Window;
+            propertiesWindow.ShowDialog();
+
+        }
         public async Task HanldeTreviewExpand(RoutedEventArgs e)
         {
 
@@ -181,9 +229,7 @@ namespace PgManager.ViewModels
             {
                 switch (node.Key)
                 {
-                    //case DbTreeNodeKeys.Database:
-                    //    break;
-                    case DbTreeNodeKeys.Database:
+                    case DbTreeNodeKeys.Shema:
                         LoadTables(node);
                         break;
                     default:

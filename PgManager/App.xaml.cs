@@ -38,9 +38,11 @@ namespace PgManager
         {
 
             services.AddTransient<SettingsViewModel>();
+            services.AddSingleton<TablePropertiesViewModel>();
             services.AddTransient<MainViewModel>();
 
             services.AddTransient<SettingsWindow>();
+            services.AddTransient<TablePropertiesWindow>();
             services.AddTransient<MainWindow>();
 
             services.AddSingleton<ApiService>();

@@ -12,23 +12,16 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-using PgManager.ViewModels;
-using PgManager.Windows;
-
-namespace PgManager
+namespace PgManager.Windows
 {
-
-    public partial class SettingsWindow : BaseWindow
+    /// <summary>
+    /// Логика взаимодействия для TablePropertiesWindow.xaml
+    /// </summary>
+    public partial class TablePropertiesWindow : BaseWindow
     {
-        public SettingsWindow()
+        public TablePropertiesWindow()
         {
             InitializeComponent();
-        }
-
-        public SettingsWindow(SettingsViewModel viewModel) : this()
-        {
-            DataContext = viewModel;
-            viewModel.Window = this;
         }
     }
 }
